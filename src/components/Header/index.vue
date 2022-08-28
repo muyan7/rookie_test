@@ -1,45 +1,38 @@
 <template>
-  <header class="header">
-    <!-- 头部的第一行 -->
-    <div class="top">
-      <div class="container">
-        <div class="loginList">
-          <p>尚品汇欢迎您！</p>
+  <!-- 头部 -->
+  <header>
+    <div class="topStyle">
+      <div class="top w">
+        <div class="leftWelcome">
+          <p>商品会欢迎您!</p>
           <p>
             <span>请</span>
-            <a href="###">登录</a>
-            <a href="###" class="register">免费注册</a>
+            <a calss="login" href="#">登录</a>|
+            <a calss="login" href="#">免费注册</a>
           </p>
         </div>
-        <div class="typeList">
-          <a href="###">我的订单</a>
-          <a href="###">我的购物车</a>
-          <a href="###">我的尚品汇</a>
-          <a href="###">尚品汇会员</a>
-          <a href="###">企业采购</a>
-          <a href="###">关注尚品汇</a>
-          <a href="###">合作招商</a>
-          <a href="###">商家后台</a>
+        <div class="rightOrder">
+          <a class="myorder" href="#">我的订单</a>|
+          <a class="myorder" href="#">我的购物车</a>|
+          <a class="myorder" href="#">我的尚品汇</a>|
+          <a class="myorder" href="#">尚品汇会员</a>|
+          <a class="myorder" href="#">企业采购</a>|
+          <a class="myorder" href="#">关注尚品汇</a>|
+          <a class="myorder" href="#">合作招商</a>|
+          <a class="myorder" href="#">商家后台</a>
         </div>
       </div>
     </div>
-    <!--头部第二行 搜索区域-->
-    <div class="bottom">
+    <div class="bottom w">
       <h1 class="logoArea">
-        <a class="logo" title="尚品汇" href="###" target="_blank">
-          <img src="./images/logo.png" alt="" />
-        </a>
+        <a href="#" class="logo" title="尚品居"
+          ><img src="./images/logo.png" alt=""
+        /></a>
       </h1>
       <div class="searchArea">
-        <form action="###" class="searchForm">
-          <input
-            type="text"
-            id="autocomplete"
-            class="input-error input-xxlarge"
-          />
-          <button class="sui-btn btn-xlarge btn-danger" type="button">
-            搜索
-          </button>
+        <form action="">
+          <input type="text" name="" id="" placeholder="輸入點什麽吧" />
+          <button class="searchBtn">搜索</button>
         </form>
       </div>
     </div>
@@ -48,102 +41,75 @@
 
 <script>
 export default {
-  name:''
+  name: 'Header',
 }
 </script>
 
 <style lang="less" scoped>
-
-.header {
-  & > .top {
+// 头部
+header {
+  .topStyle {
     background-color: #eaeaea;
+    width: 100%;
     height: 30px;
     line-height: 30px;
-
-    .container {
-      width: 1200px;
-      margin: 0 auto;
-      overflow: hidden;
-
-      .loginList {
-        float: left;
-
+    .top {
+      display: flex;
+      justify-content: space-between;
+      height: 100%;
+      .leftWelcome {
+        display: flex;
         p {
-          float: left;
-          margin-right: 10px;
-
-          .register {
-            border-left: 1px solid #b3aeae;
-            padding: 0 5px;
-            margin-left: 5px;
+          margin-right: 20px;
+          .login {
+            margin-right: 10px;
+          }
+          :nth-of-type(2) {
+            margin-left: 10px;
           }
         }
       }
-
-      .typeList {
-        float: right;
-
-        a {
+      .rightOrder {
+        .myorder {
           padding: 0 10px;
-
-          & + a {
-            border-left: 1px solid #b3aeae;
-          }
         }
       }
     }
   }
-
-  & > .bottom {
-    width: 1200px;
-    margin: 0 auto;
-    overflow: hidden;
-
+  .bottom {
+    height: 106px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     .logoArea {
-      float: left;
-
+      margin-left: 45px;
       .logo {
-        img {
-          width: 175px;
-          margin: 25px 45px;
-          height: 56px;
-        }
+        display: inline-block;
+        width: 175px;
+        height: 56px;
       }
     }
-
     .searchArea {
-      float: right;
-      margin-top: 35px;
-
-      .searchForm {
-        overflow: hidden;
-
-        input {
-          box-sizing: border-box;
-          width: 490px;
-          height: 32px;
-          padding: 0px 4px;
-          border: 2px solid #ea4a36;
-          float: left;
-
-          &:focus {
-            outline: none;
-          }
-        }
-
-        button {
-          height: 32px;
-          width: 68px;
-          background-color: #ea4a36;
-          border: none;
-          color: #fff;
-          float: left;
-          cursor: pointer;
-
-          &:focus {
-            outline: none;
-          }
-        }
+      display: flex;
+      width: 560px;
+      height: 32px;
+      flex-wrap: nowrap;
+      font-size: 0;
+      input {
+        height: 100%;
+        font-size: 16px;
+        outline: none;
+        width: 490px;
+        border: 2px solid red;
+        text-indent: 2em;
+      }
+      .searchBtn {
+        height: 100%;
+        width: 65px;
+        background-color: red;
+        color: rgb(255, 255, 255);
+        border: none;
+        font-size: 16px;
       }
     }
   }
