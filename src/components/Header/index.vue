@@ -7,8 +7,8 @@
           <p>商品会欢迎您!</p>
           <p>
             <span>请</span>
-            <a calss="login" href="#">登录</a>|
-            <a calss="login" href="#">免费注册</a>
+            <router-link to="/login" class="login">登录</router-link>|
+            <router-link to="/register" class="login">免费注册</router-link>
           </p>
         </div>
         <div class="rightOrder">
@@ -25,14 +25,20 @@
     </div>
     <div class="bottom w">
       <h1 class="logoArea">
-        <a href="#" class="logo" title="尚品居"
-          ><img src="./images/logo.png" alt=""
-        /></a>
+        <router-link to="/home" class="logo"
+          ><img src="./images/logo.png" title="尚品居"
+        /></router-link>
       </h1>
       <div class="searchArea">
         <form action="">
-          <input type="text" name="" id="" placeholder="輸入點什麽吧" />
-          <button class="searchBtn">搜索</button>
+          <input
+            type="text"
+            name=""
+            id=""
+            placeholder="輸入點什麽吧"
+            v-model="keyword"
+          />
+          <button class="searchBtn" @click="goSearch">搜索</button>
         </form>
       </div>
     </div>
@@ -42,6 +48,25 @@
 <script>
 export default {
   name: 'Header',
+  data() {
+    return {
+      keyword: '',
+    }
+  },
+
+  methods: {
+    // 搜索按钮的回调函数，需要向search路由跳转
+    goSearch() {
+     const res= this.$router.push({
+        name: 'search',
+        params: { keyword: this.keyword },
+        query:{k:this.keyword.toUpperCase()}
+      })
+      console.log(this)
+      console.log(this.$router)
+      console.log(this.$route)
+    },
+  },
 }
 </script>
 
@@ -62,10 +87,11 @@ header {
         p {
           margin-right: 20px;
           .login {
+            display: inline-block;
             margin-right: 10px;
           }
           :nth-of-type(2) {
-            margin-left: 10px;
+            margin-left: 5px;
           }
         }
       }
@@ -87,6 +113,10 @@ header {
         display: inline-block;
         width: 175px;
         height: 56px;
+        img {
+          width: 100%;
+          height: 56px;
+        }
       }
     }
     .searchArea {

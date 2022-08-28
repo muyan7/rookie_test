@@ -13,19 +13,34 @@ export default new VueRouter({
   // 配置
   routes: [
     {
-      path:'/home',
-      component:Home
+      name:'home',
+      path: '/home',
+      component: Home,
+      meta:{ show:true} //控制页面显示组件。
     },
     {
-      path:'/login',
-      component:Login
+      name:'login',
+      path: '/login',
+      component: Login,
+      meta:{ show:false}
     },
     {
-      path:'/register',
-      component:Register
-    }, {
-      path:'/search',
-      component:Search
+      name:'register',
+      path: '/register',
+      component: Register,
+      meta:{ show:false}
     },
-  ]
+    {
+      name: 'search',
+      // 需要parmas传参的地方需要：keyword占位。
+      path: '/search/:keyword',
+      component: Search,
+      meta:{ show:true}
+    },
+    // 配置路由首页。重定向，项目跑起来后访问/，立马就让他定向到首页
+    {
+      path: '*',
+      redirect: '/home',
+    },
+  ],
 })
