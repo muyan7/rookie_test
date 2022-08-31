@@ -59,12 +59,8 @@ export default {
     goSearch() {
      const res= this.$router.push({
         name: 'search',
-        params: { keyword: this.keyword },
-        query:{k:this.keyword.toUpperCase()}
+        query:{keyword:this.keyword.toUpperCase()}
       })
-      console.log(this)
-      console.log(this.$router)
-      console.log(this.$route)
     },
   },
 }
@@ -130,13 +126,13 @@ header {
         font-size: 16px;
         outline: none;
         width: 490px;
-        border: 2px solid red;
+        border: 2px solid #12fbe8;
         text-indent: 2em;
       }
       .searchBtn {
         height: 100%;
         width: 65px;
-        background-color: red;
+        background-color: #12fbe8;
         color: rgb(255, 255, 255);
         border: none;
         font-size: 16px;
