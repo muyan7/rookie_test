@@ -17,6 +17,10 @@ export default {
     Header,
     Footer,
   },
+  mounted(){
+    //129指派发一次请求action,获取商品分类的三级列表的数据
+    this.$store.dispatch('categoryList')
+  }
 }
 </script>
 

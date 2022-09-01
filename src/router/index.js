@@ -33,7 +33,7 @@ export default new VueRouter({
     {
       name: 'search',
       // 需要parmas传参的地方需要：keyword占位。
-      path: '/search',
+      path: '/search/:keyword',
       component: Search,
       meta:{ show:true}
     },

@@ -14,6 +14,11 @@ import { reqCategoryList } from '../src/api';
 reqCategoryList()
 // 引入仓库
 import store from '../src/store'
+// 132.7引入mockServe.js虚拟数据
+import '../src/mock/mockServe'
+// 134.1引入swiper样式,以供全局swiper使用.样式没有对外暴露,所以直接引入
+import 'swiper/css/swiper.css'
+
 new Vue({
   render: (h) => h(App),
   // 注册路由：那么组件身上都具有了$route和$router属性。

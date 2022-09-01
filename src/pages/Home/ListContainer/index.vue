@@ -4,20 +4,16 @@
     <div class="sortList clearfix">
       <div class="center">
         <!--banner轮播-->
-        <div class="swiper-container" id="mySwiper">
+        <div class="swiper-container" ref="mySwiper">
           <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <img src="./images/banner1.jpg" />
+            <!-- 134.2遍历轮播图.还需要new swiper实例. -->
+            <div
+              class="swiper-slide"
+              v-for="item in renderBannerList"
+              :key="item.id"
+            >
+              <img :src="item.imgUrl" />
             </div>
-          <!--   <div class="swiper-slide">
-              <img src="./images/banner2.jpg" />
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/banner3.jpg" />
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/banner4.jpg" />
-            </div> -->
           </div>
           <!-- 如果需要分页器 -->
           <div class="swiper-pagination"></div>
@@ -100,15 +96,64 @@
 </template>
 
 <script>
+// 133.7引入仓库中的数据
+import { mapState } from 'vuex'
+// 134引入轮播图包,样式需要在入口文件中引入.为全局引用
+import Swiper from 'swiper'
 export default {
   name: 'ListContainer',
-
+  mounted() {
+    // 133.3派发action：通知Vuex发送请求，获取数据，存储于仓库中。
+    this.$store.dispatch('getBannerList')
+    //  new swiper实例放在这里不可以,dispatch语句涉及到异步语句,导致v-for遍历的时候结构不完整.
+    /* new Swiper(document.querySelector('.swiper-container'), {
+      loop: true,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+    }) */
+  },
+  // 133.8处理数据
+  computed: {
+    ...mapState({
+      renderBannerList: (state) => state.home.bannerList,
+    }),
+  },
+  // 134.3监听数据的变化
+  watch: {
+    //134.4监听renderBannerList 数据的变化.空数组到含有多个元素
+    renderBannerList: {
+      // 134.5执行hander,说明组件实例身上的四个对象数据以及加载完毕了.
+      // 只能保证数据有,但是v-for渲染完结构式不得而知的.
+      // 134.6nextTick在下次 DOM 更新循环结束之后执行延迟回调。在修改数据之后立即使用这个方法，获取更新后的 DOM
+      handler(newValue, oldValue) {
+        this.$nextTick(() => {
+          let mySwiper = new Swiper(this.$refs.mySwiper, {
+            loop: true, //无限循环
+            autoplay: true, //自动轮播
+            pagination: {
+              el: '.swiper-pagination',
+              clickable: true, //可点击小按钮
+            },
+            navigation: { //左右切换
+              nextEl: '.swiper-button-next',
+              prevEl: '.swiper-button-prev',
+            },
+          })
+        })
+      },
+    },
+  },
 }
 </script>
 
 <style lang="less" scoped>
 .list-container {
-
   .sortList {
     height: 464px;
     padding-left: 210px;

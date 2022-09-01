@@ -3,67 +3,72 @@
   <div class="type-nav">
     <div class="container w">
       <!-- 114事件的委派，保证移出大标题的时候才消失active类名 -->
-      <div @mouseleave="removeIndex">
+      <!-- 123当在不显示的模块内时，移入标题就能显示隐藏的分类列表 -->
+      <div @mouseleave="removeIndex" @mouseenter="enterShow">
         <h2 class="all">全部商品分类</h2>
-        <!-- 三级联动 -->
-        <div class="sort">
-          <!-- 一级分类 -->
-          <!-- 121事件委派跳转，避免重复多次渲染。但是要考虑如何获取a标签，一二三级如何区别-->
-          <div class="all-sort-list2" @click="goSearch">
-            <div
-              class="item"
-              v-for="(item1, index) in renderCategoryList"
-              :key="item1.categoryId"
-              :class="{ active: currentIndex === index }"
-            >
-              <h3 @mouseenter="checkoutIndex(index)">
-                <a
-                  href="#"
-                  :data-categoryName="item1.categoryName"
-                  :data-categoryId1="item1.categoryId"
-                  >{{ item1.categoryName }}</a
-                >
-              </h3>
-              <!-- 116 判断currentIndex === index 来显示盒子 -->
+        <!-- 过渡动画必须要有v-if或者v-show的判断条件 -->
+        <!-- 127过渡动画 name代表动画开头的名字-->
+        <transition name="sort">
+          <!-- 三级联动 -->
+          <!-- 122分类列表要在search模块一开始隐藏 -->
+          <div class="sort" v-show="show">
+            <!-- 一级分类 -->
+            <!-- 121事件委派跳转，避免重复多次渲染。但是要考虑如何获取a标签，一二三级如何区别-->
+            <div class="all-sort-list2" @click="goSearch">
               <div
-                class="item-list clearfix"
-                :style="{ display: currentIndex === index ? 'block' : 'none' }"
+                class="item"
+                v-for="(item1, index) in renderCategoryList"
+                :key="item1.categoryId"
+                :class="{ active: currentIndex === index }"
               >
-                <!-- 二级分类 -->
+                <h3 @mouseenter="checkoutIndex(index)">
+                  <a
+                    :data-categoryName="item1.categoryName"
+                    :data-categoryId1="item1.categoryId"
+                    >{{ item1.categoryName }}</a
+                  >
+                </h3>
+                <!-- 116 判断currentIndex === index 来显示盒子 -->
                 <div
-                  class="subitem"
-                  v-for="item2 in item1.categoryChild"
-                  :key="item2.categoryId"
+                  class="item-list clearfix"
+                  :style="{
+                    display: currentIndex === index ? 'block' : 'none',
+                  }"
                 >
-                  <dl class="fore">
-                    <dt>
-                      <a
-                        href="#"
-                        :data-categoryName="item2.categoryName"
-                        :data-categoryId2="item2.categoryId"
-                        >{{ item2.categoryName }}</a
-                      >
-                    </dt>
-                    <dd>
-                      <!-- 三级分类 -->
-                      <em
-                        v-for="item3 in item2.categoryChild"
-                        :key="item3.categoryId"
-                      >
+                  <!-- 二级分类 -->
+                  <div
+                    class="subitem"
+                    v-for="item2 in item1.categoryChild"
+                    :key="item2.categoryId"
+                  >
+                    <dl class="fore">
+                      <dt>
                         <a
-                          href="#"
-                          :data-categoryName="item3.categoryName"
-                          :data-categoryId3="item3.categoryId"
-                          >{{ item3.categoryName }}</a
+                          :data-categoryName="item2.categoryName"
+                          :data-categoryId2="item2.categoryId"
+                          >{{ item2.categoryName }}</a
                         >
-                      </em>
-                    </dd>
-                  </dl>
+                      </dt>
+                      <dd>
+                        <!-- 三级分类 -->
+                        <em
+                          v-for="item3 in item2.categoryChild"
+                          :key="item3.categoryId"
+                        >
+                          <a
+                            :data-categoryName="item3.categoryName"
+                            :data-categoryId3="item3.categoryId"
+                            >{{ item3.categoryName }}</a
+                          >
+                        </em>
+                      </dd>
+                    </dl>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </transition>
       </div>
       <nav class="nav">
         <a href="###">服装城</a>
@@ -80,6 +85,7 @@
 </template>
 
 <script>
+// 引入仓库中的数据
 import { mapState } from 'vuex'
 // 118引入lodash，按需引入。因为lodash是默认暴露，所以不需要加大括号{throttle}
 import throttle from 'lodash/throttle'
@@ -91,19 +97,23 @@ export default {
     return {
       // 111初始化索引号，方便寻找每一个需要的小li
       currentIndex: -1,
+      // 初始值为true
+      show: true,
     }
   },
   // 组件挂在完毕，就向服务器请求数据
   mounted() {
-    // 100通知Vuex发送请求，获取数据，存储于仓库中。
-    this.$store.dispatch('categoryList')
+    // 100通知Vuex发送请求，获取数据，存储于仓库中。为了避免请求多次，将此请求移动至App.vue的mounted钩子中
+    // this.$store.dispatch('categoryList')
+    // 123判断不是/home的路径就改成false
+    if (this.$route.path !== '/home') this.show = false
   },
   // 109计算属性
   computed: {
     ...mapState({
       //110当使用这个计算属性的时候，该函数会立刻执行一次
       // 注入一个参数state。是大仓库中的数据，包含home和search
-      renderCategoryList: (state) => state.home.categoryList,
+      renderCategoryList: state => state.home.categoryList,
     }),
   },
   //112添加方法来控制索引号
@@ -123,6 +133,11 @@ export default {
     removeIndex() {
       // 115 鼠标离开后就去变为原来的
       this.currentIndex = -1
+      // 126如果路径不是在home的时候就让其经行下去
+      if (this.$route.path !== '/home') {
+        // 125鼠标离开变成false
+        this.show = false
+      }
     },
     // 120进行search页面跳转.利用事件委派。获取点击的每一个a标签
     goSearch(event) {
@@ -135,21 +150,29 @@ export default {
         event.target.dataset
       // console.log(event.target.dataset)
       // 122.1包装传参的对象路径名
-      let location={name:'search'}
+      let location = { name: 'search' }
       // 122.2传参的参数
-      let query={categoryName:categoryname}
+      let query = { categoryName: categoryname }
       // 122.3判断是否具有这个属性才进行参数的赋值
       if (categoryname) {
-        if(categoryid1) query.categoryId1=categoryid1
-        else if(categoryid2) query.categoryId2=categoryid2
-        else query.categoryId3=categoryid3
+        if (categoryid1) query.categoryId1 = categoryid1
+        else if (categoryid2) query.categoryId2 = categoryid2
+        else query.categoryId3 = categoryid3
       }
       // 122.4将以及封装好的query对象再次放入location对象中
-      location.query=query
+    //  130如果参数中带有params参数，则也需要带过去
+    if(this.$route.params){
+      location.params=this.$route.params
+       location.query = query
       // console.log(query);
       // console.log(location);
       // 122.5只用发送一次push
       this.$router.push(location)
+    }
+    },
+    // 124鼠标进入的时候显示样式
+    enterShow() {
+      if (this.$route.path !== '/home') this.show = true
     },
   },
 }
@@ -200,7 +223,7 @@ export default {
             overflow: hidden;
             padding: 0 20px;
             margin: 0;
-
+            cursor: pointer;
             a {
               color: #333;
             }
@@ -239,6 +262,7 @@ export default {
                   text-align: right;
                   padding: 3px 6px 0 0;
                   font-weight: 700;
+                  cursor: pointer;
                 }
 
                 dd {
@@ -246,7 +270,6 @@ export default {
                   width: 415px;
                   padding: 3px 0 0;
                   overflow: hidden;
-
                   em {
                     float: left;
                     height: 14px;
@@ -254,6 +277,7 @@ export default {
                     padding: 0 8px;
                     margin-top: 5px;
                     border-left: 1px solid #ccc;
+                  cursor: pointer;
                   }
                 }
               }
@@ -261,9 +285,34 @@ export default {
           }
         }
         .active {
-          background-color: rgb(44, 248, 255);
+          background-color: rgb(176, 235, 249);
         }
       }
+    }
+    // 128过度动画的开始阶段（进入）
+    .sort-enter {
+      height: 0;
+      transform: rotate(18deg);
+    }
+    // 128.1过度动画的结束状态（进入）
+    .sort-enter-to {
+      height: 461px;
+      transform: rotate(0deg);
+    }
+    // 128.2定义动画事件和速率
+    .sort-enter-active {
+      transition: all 0.5s;
+    }
+    .sort-leave {
+      height: 461px;
+    }
+    // 128.1过度动画的结束状态（进入）
+    .sort-leave-to {
+      height: 0px;
+    }
+    // 128.2定义动画事件和速率
+    .sort-leave-active {
+      transition: all 0.5s;
     }
   }
 }
