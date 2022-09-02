@@ -166,7 +166,7 @@ export default {
 
             &.active {
               a {
-                color: #e1251b;
+                color: #48eaf5;
               }
             }
           }
@@ -175,7 +175,7 @@ export default {
     }
 
     .tab-content {
-      border-top: 2px solid #c81623;
+      border-top: 2px solid #46f8de;
       border-bottom: 1px solid #e4e4e4;
 
       .tab-pane {

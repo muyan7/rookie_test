@@ -73,6 +73,12 @@ export default {
       }
     },
   },
+  // 145.14通知清除关键字
+  mounted() {
+    this.$bus.$on('clearKeyword', (params) => {
+      this.keyword = ''
+    })
+  },
 }
 </script>
 

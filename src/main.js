@@ -10,17 +10,22 @@ Vue.config.productionTip = false
 //引入路由
 import router from '../src/router'
 // 测试接口
-import { reqCategoryList } from '../src/api';
-reqCategoryList()
+// import { reqCategoryList } from '../src/api';
+// reqCategoryList()
 // 引入仓库
 import store from '../src/store'
 // 132.7引入mockServe.js虚拟数据
 import '../src/mock/mockServe'
 // 134.1引入swiper样式,以供全局swiper使用.样式没有对外暴露,所以直接引入
 import 'swiper/css/swiper.css'
-
+// import{ reqSearchInfo }from '../src/api'
+// reqSearchInfo({})
 new Vue({
   render: (h) => h(App),
+  // 145.12配置全局事件总线
+  beforeCreate() {
+    Vue.prototype.$bus=this
+  },
   // 注册路由：那么组件身上都具有了$route和$router属性。
   // $route一般获取路由信息【路径、query、params等】
   // $router一般经行编程式导航经行路由跳转【push|replace】
