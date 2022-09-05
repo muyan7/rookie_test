@@ -62,6 +62,8 @@ export default {
       // console.log(123);
       // console.log(item,itemValue)
       this.$emit('attrInfo',item, itemValue)
+
+      // 
     },
   },
 }

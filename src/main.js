@@ -1,10 +1,13 @@
 import Vue from 'vue'
 import App from './App.vue'
 //三级联动组件，全局组件
-import TypeNav from '../src/components/TypeNav';
+import TypeNav from '../src/components/TypeNav'
 // 注册全局组件，第一个参数是名字，第二个参数是哪一个组件.
 // 全局组件放入components文件中。
+// 149.注册全局组件分页器
+import Pagination from '../src/components/Pagination'
 Vue.component(TypeNav.name, TypeNav)
+Vue.component(Pagination.name, Pagination)
 // 关闭生产提示
 Vue.config.productionTip = false
 //引入路由
@@ -24,7 +27,7 @@ new Vue({
   render: (h) => h(App),
   // 145.12配置全局事件总线
   beforeCreate() {
-    Vue.prototype.$bus=this
+    Vue.prototype.$bus = this
   },
   // 注册路由：那么组件身上都具有了$route和$router属性。
   // $route一般获取路由信息【路径、query、params等】

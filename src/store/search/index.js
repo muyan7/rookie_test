@@ -12,7 +12,8 @@ const mutations = {
 const actions = {
   // 141.1当前的getSearchList函数在调用获取服务器数据时，至少传递一个空对象参数
   async getSearchList( {commit},params={}) {
-    const result = await reqSearchList({ params })
+    let result = await reqSearchList({ params })
+    // console.log(result,params)
     if(result.code==200) commit('GETSEARCHLIST',result.data)
   },
 }

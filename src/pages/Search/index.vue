@@ -37,6 +37,15 @@
             >
               {{ searchParams.trademark.split(':')[1] }} <i>x</i>
             </li>
+            <!-- 147.6平台售卖属性值展示 -->
+            <li
+              class="with-x"
+              v-for="(attrValue, index) in searchParams.props"
+              :key="index"
+              @click="removeAttrdName(index)"
+            >
+              {{ attrValue.split(':')[1] }} <i>x</i>
+            </li>
           </ul>
         </div>
 
@@ -48,24 +57,34 @@
         <div class="details clearfix">
           <div class="sui-navbar">
             <div class="navbar-inner filter">
+              <!--排序的结构 -->
+              <!-- 148判断类名 -->
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <!-- 149排序的操作 -->
+                <li :class="{ active: isOne }" @click="changeOrder('1')">
+                  <!-- 148.3箭头 -->
+                  <a
+                    >综合<span
+                      v-show="isOne"
+                      class="iconfont"
+                      :class="{
+                        'icon-jiantou_xiangshang': isAsc,
+                        'icon-jiantou_xiangxia': isDesc,
+                      }"
+                    ></span
+                  ></a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
-                </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                <li :class="{ active: isTwo }" @click="changeOrder('2')">
+                  <a
+                    >价格<span
+                      v-show="isTwo"
+                      class="iconfont"
+                      :class="{
+                        'icon-jiantou_xiangshang': isAsc,
+                        'icon-jiantou_xiangxia': isDesc,
+                      }"
+                    ></span
+                  ></a>
                 </li>
               </ul>
             </div>
@@ -76,9 +95,8 @@
               <li class="yui3-u-1-5" v-for="item in goodsList" :key="item.id">
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="item.html" target="_blank"
-                      ><img :src="item.defaultImg"
-                    /></a>
+                    <router-link :to="`/detail/${item.id}`"><img :src="item.defaultImg"
+                    /></router-link>
                   </div>
                   <div class="price">
                     <strong>
@@ -109,35 +127,14 @@
               </li>
             </ul>
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <!-- 149.分页器得要是全局组件,传输数据给子组件 -->
+          <Pagination
+            :pageNo="searchParams.pageNo"
+            :pageSize="searchParams.pageSize"
+            :total="total"
+            :continues="5"
+            @getPageNo="getPageNo"
+          />
         </div>
       </div>
     </div>
@@ -149,7 +146,7 @@ import SearchSelector from './SearchSelector/SearchSelector'
 // 141.4引入数据
 // import {mapState} from "vuex"
 // 141.8 引入getters数据
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 export default {
   name: 'Search',
   data() {
@@ -161,9 +158,9 @@ export default {
         categoryId3: '',
         categoryName: '', // 分类的名字
         keyword: '', // 关键字
-        order: '', // 排序
+        order: '1:asc', // 排序
         pageNo: 1, //当前的页面，默认是第一页 。分页器
-        pageSize: 5, //每页的数据条数。
+        pageSize: 10, //每页的数据条数。
         props: [], //平台售卖的属性操作的参数
         trademark: '', //品牌
       },
@@ -194,10 +191,29 @@ export default {
 }) */
     // 141.9mapGetters的写法，传递的时数组，因为getters没有划分模块（home,search）。
     ...mapGetters(['goodsList']),
+    // 148.1计算类名是否含有1或者2
+    isOne() {
+      return this.searchParams.order.indexOf('1') !== -1
+    },
+    isTwo() {
+      return this.searchParams.order.indexOf('2') !== -1
+    },
+    // 148.2判断箭头的指向
+    isAsc() {
+      return this.searchParams.order.indexOf('asc') !== -1
+    },
+    isDesc() {
+      return this.searchParams.order.indexOf('desc') !== -1
+    },
+    // 149.8获取分页器数据
+    ...mapState({
+      total: (state) => state.search.searchList.total,
+    }),
   },
   methods: {
     // 142.1封装数据成函数，需要的时候调用就好了
     getData() {
+      // console.log(this.searchParams)
       this.$store.dispatch('getSearchList', this.searchParams)
     },
     // 145.1删除分类的函数
@@ -249,14 +265,48 @@ export default {
       // console.log(item, itemValue)
       // 147.4处理好数据成字符串放入数组
       let props = `${item.attrId}:${itemValue}:${item.attrName}`
-      this.searchParams.props.push(props)
-      
+      // 147.5判断是否含有props数据。数组去重.
+      if (this.searchParams.props.indexOf(props) === -1)
+        this.searchParams.props.push(props)
+      this.getData()
+    },
+    // 147.7删除平台售卖属性
+    removeAttrdName(index) {
+      this.searchParams.props.splice(index, 1)
+      // 再次发送请求
+      this.getData()
+    },
+    // 148.1排序的操作
+    changeOrder(flag) {
+      // 2flag标记是点击了综合还是价格
+      let originOrder = this.searchParams.order
+      console.log(originOrder)
+      // 3获取最开始状态
+      let originFlag = originOrder.split(':')[0]
+      let originSort = originOrder.split(':')[1]
+      // 4准备一个新的ordr属性值
+      let newOrder = ''
+      // 判断点击的是综合还是价格
+      newOrder =
+        flag === originFlag
+          ? `${originFlag}:${originSort === 'asc' ? 'desc' : 'asc'}`
+          : `${flag}:${'desc'}`
+      // 148.5将新的值赋给searchParams
+      this.searchParams.order = newOrder
+      this.getData()
+    },
+     //149.9自定义事件的回调函数---获取当前第几页
+    getPageNo(pageNo) {
+      //整理带给服务器参数
+      this.searchParams.pageNo = pageNo;
+      //再次发请求
+      this.getData();
     },
   },
   // 144解决search只能发送一次请求的问题。利用watch监视
   watch: {
     // 监听属性.路由的信息是否发生变化。不需要加this
-    $route(newValue, oldValue) {
+    $route() {
       // console.log(newValue,oldValue)
       // console.log(this.searchParams)
       // 144.1再次发送请求之前仍然需要整理带给服务器的参数
@@ -523,92 +573,8 @@ export default {
           }
         }
       }
-
-      .page {
-        width: 733px;
-        height: 66px;
-        overflow: hidden;
-        float: right;
-
-        .sui-pagination {
-          margin: 18px 0;
-
-          ul {
-            margin-left: 0;
-            margin-bottom: 0;
-            vertical-align: middle;
-            width: 490px;
-            float: left;
-
-            li {
-              line-height: 18px;
-              display: inline-block;
-
-              a {
-                position: relative;
-                float: left;
-                line-height: 18px;
-                text-decoration: none;
-                background-color: #fff;
-                border: 1px solid #e0e9ee;
-                margin-left: -1px;
-                font-size: 14px;
-                padding: 9px 18px;
-                color: #333;
-              }
-
-              &.active {
-                a {
-                  background-color: #fff;
-                  color: #54c3f6;
-                  border-color: #fff;
-                  cursor: default;
-                }
-              }
-
-              &.prev {
-                a {
-                  background-color: #fafafa;
-                }
-              }
-
-              &.disabled {
-                a {
-                  color: #999;
-                  cursor: default;
-                }
-              }
-
-              &.dotted {
-                span {
-                  margin-left: -1px;
-                  position: relative;
-                  float: left;
-                  line-height: 18px;
-                  text-decoration: none;
-                  background-color: #fff;
-                  font-size: 14px;
-                  border: 0;
-                  padding: 9px 18px;
-                  color: #333;
-                }
-              }
-
-              &.next {
-                a {
-                  background-color: #fafafa;
-                }
-              }
-            }
-          }
-
-          div {
-            color: #333;
-            font-size: 14px;
-            float: right;
-            width: 241px;
-          }
-        }
+      .active {
+        background: skyblue;
       }
     }
   }

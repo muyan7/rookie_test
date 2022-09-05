@@ -5,10 +5,10 @@ module.exports = defineConfig({
   // 代理跨域
   devServer: {
     proxy: {
-      "/api": {
-        target: "http://39.98.123.211:8510",
+      '/api': {
+        target: 'http://39.98.123.211:8510',
         // pathRewrite: {"^/api" : ""}
-      }
-    }
-  }
+      },
+    },
+  },
 })
