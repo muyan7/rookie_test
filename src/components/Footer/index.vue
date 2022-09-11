@@ -83,7 +83,6 @@
       <p>京ICP备19006430号</p>
     </div>
   </footer>
-  
 </template>
 
 <script>

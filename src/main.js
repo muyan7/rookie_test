@@ -23,11 +23,16 @@ import '../src/mock/mockServe'
 import 'swiper/css/swiper.css'
 // import{ reqSearchInfo }from '../src/api'
 // reqSearchInfo({})
+// 169.1数据不再往仓库内放置,但是每个路由都需要用到数据,所以要在这暴露出所有的文件请求接口
+import * as API from './api'
+// console.log(API)
 new Vue({
   render: (h) => h(App),
   // 145.12配置全局事件总线
   beforeCreate() {
     Vue.prototype.$bus = this
+    // 169.2放在原型上
+    Vue.prototype.$API = API
   },
   // 注册路由：那么组件身上都具有了$route和$router属性。
   // $route一般获取路由信息【路径、query、params等】

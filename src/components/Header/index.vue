@@ -5,16 +5,24 @@
       <div class="top w">
         <div class="leftWelcome">
           <p>商品会欢迎您!</p>
-          <p>
+          <!-- 164.5用户 -->
+          <p v-if="!userName">
             <span>请</span>
             <router-link to="/login" class="login">登录</router-link>|
             <router-link to="/register" class="login">免费注册</router-link>
           </p>
+          <p v-else>
+            <a class="login">{{ userName }}</a>
+            <a class="login" @click="logout">退出登录</a>
+          </p>
         </div>
         <div class="rightOrder">
-          <a class="myorder" href="#">我的订单</a>|
-          <a class="myorder" href="#">我的购物车</a>|
-          <a class="myorder" href="#">我的尚品汇</a>|
+          <router-link class="myorder" to="/center/myorder"
+            >我的订单</router-link
+          >|
+          <router-link class="myorder" to="/ShopCart"
+            >我的购物车</router-link
+          >| <a class="myorder" href="#">我的尚品汇</a>|
           <a class="myorder" href="#">尚品汇会员</a>|
           <a class="myorder" href="#">企业采购</a>|
           <a class="myorder" href="#">关注尚品汇</a>|
@@ -26,7 +34,7 @@
     <div class="bottom w">
       <h1 class="logoArea">
         <router-link to="/home" class="logo"
-          ><img src="./images/logo.png" title="尚品居"
+          ><img src="../../assets/logo.png" title="尚品居"
         /></router-link>
       </h1>
       <div class="searchArea">
@@ -70,7 +78,17 @@ export default {
         }
         location.query = this.$route.query
         this.$router.push(location)
-        this.keyword=''
+        this.keyword = ''
+      }
+    },
+    // 165.1退出登录
+    async logout() {
+      // 发请求清除数据，前后端都清除（userInfo,token都要清除）
+      try {
+        await this.$store.dispatch('userLogout')
+        this.$router.push('/home')
+      } catch (error) {
+        alert(error.message)
       }
     },
   },
@@ -79,6 +97,12 @@ export default {
     this.$bus.$on('clearKeyword', (params) => {
       this.keyword = ''
     })
+  },
+  // 164.4计算出从仓库里取出来的登录数据，并且判断显示何种信息
+  computed: {
+    userName() {
+      return this.$store.state.user.userInfo.name
+    },
   },
 }
 </script>

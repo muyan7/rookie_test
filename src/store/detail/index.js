@@ -1,7 +1,13 @@
-import { reqGoodsInfo,reqShopcarList } from '../../api'
+import { reqGoodsInfo, reqAddShopcarList } from '../../api'
+// 引入uuid的暴露.生成一个随机字符串，有一个就不能再改变了
+import {getNANOID} from '../../utils/nanoid_token';
 // 151.2goods详情模块的小仓库
 // state:仓库，存储数据
-const state = { goodsList: {} }
+const state = {
+  goodsList: {},
+  // 155.4获取每个用户的id.必须在加入购物车的时候就提交过去。通过请求头。
+  nanoid_token: getNANOID(),
+}
 // mutations :修改state的唯一手段
 const mutations = {
   GETGOODSLIST(state, goodsList) {
@@ -18,7 +24,7 @@ const actions = {
   },
   // 154.1将产品添加到购物车中.shopcarList这个函数返回的是个promise。
   async shopcarList({ commit }, { skuId, skuNum }) {
-    let result = await reqShopcarList( skuId, skuNum )
+    let result = await reqAddShopcarList(skuId, skuNum)
     // console.log(result)
     // 加入购物车以后，前台将参数带给服务器。
     // 数据写入服务器成功，并没有返回其他数据，只是返回了一个code==200,则没必要三连环。
